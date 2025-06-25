@@ -7,7 +7,7 @@ from src.optimizer import optimize_shipping
 
 def show_dashboard():
 
-    st.set_page_config(page_title="Container Optimization Dashboard", layout="wide",initial_sidebar_state="expanded")
+    st.set_page_config(page_title="Container Optimization Dashboard", layout="wide", initial_sidebar_state="expanded")
     st.title("📦 Container Shipping Optimizer")
 
     st.markdown("""
