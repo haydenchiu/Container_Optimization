@@ -1,17 +1,14 @@
-import sys
-import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
 import streamlit as st
-import pandas as pd
-import plotly.express as px
-from src.preprocessing import preprocess_data
-from src.optimizer import optimize_shipping
-from app.components import show_dashboard, show_definitions, show_download_templates
 
-# Navigation
-page = st.sidebar.selectbox("Navigation", ["Dashboard", "Definitions & Assumptions", "Download CSV Templates"])
+st.set_page_config(
+    page_title="Container Optimization Dashboard", layout="wide", initial_sidebar_state="expanded"
+)
 
+from components import show_dashboard, show_definitions, show_download_templates  # noqa: E402
+
+page = st.sidebar.selectbox(
+    "Navigation", ["Dashboard", "Definitions & Assumptions", "Download CSV Templates"]
+)
 
 if page == "Dashboard":
     show_dashboard()

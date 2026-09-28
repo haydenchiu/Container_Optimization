@@ -1,0 +1,39 @@
+[project]
+name = "container-optimization"
+version = "0.1.0"
+description = "Assign purchase order lines to shipping containers with a MILP, plus a Streamlit dashboard."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "numpy>=2.3.1",
+    "pandas>=2.3.0",
+    "plotly>=6.1.2",
+    "pulp>=3,<4",
+    "streamlit>=1.50",
+]
+
+[build-system]
+requires = ["uv_build>=0.9.7,<0.10"]
+build-backend = "uv_build"
+
+[tool.pytest.ini_options]
+testpaths = ["test"]
+# PULP_CBC_CMD is kept on purpose: it runs the CBC binary bundled with pulp<4, whereas
+# COIN_CMD resolves whichever `cbc` is first on PATH.
+filterwarnings = ["ignore:PULP_CBC_CMD is deprecated:DeprecationWarning"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+
+[tool.ruff.lint.per-file-ignores]
+"app/components.py" = ["E501"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.0",
+    "ruff>=0.16.9",
+]
