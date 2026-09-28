@@ -2,6 +2,26 @@
 
 A web-based dashboard for optimizing purchase order fulfillment using available container capacities. Upload your data, configure penalties, and visualize optimization results with interactive dashboards.
 
+**Live demo:** [containeroptimization-fjucc2hy794xnc9t7cbgyo.streamlit.app](https://containeroptimization-fjucc2hy794xnc9t7cbgyo.streamlit.app/)
+
+---
+
+## Try It Live
+
+No installation needed. The app is hosted on Streamlit Community Cloud.
+
+1. Download the two sample files:
+   [sample_purchase_order_v1.csv](https://raw.githubusercontent.com/haydenchiu/Container_Optimization/main/data/samples/sample_purchase_order_v1.csv) and
+   [sample_container_capacity_v1.csv](https://raw.githubusercontent.com/haydenchiu/Container_Optimization/main/data/samples/sample_container_capacity_v1.csv)
+   (right-click, "Save link as...").
+2. Open the [live demo](https://containeroptimization-fjucc2hy794xnc9t7cbgyo.streamlit.app/).
+3. Upload the purchase order file and the container capacity file.
+4. Optionally adjust the penalty settings in the sidebar, then click **Run Optimization**.
+5. Explore the KPIs, charts and tables, and use the sidebar filters to slice the results.
+
+If the app has been idle it may show a "This app has gone to sleep" page; click the wake-up button and wait about a minute.
+To use your own data, download blank templates from the **Download CSV Templates** page in the sidebar navigation.
+
 ---
 
 ## Features
@@ -72,19 +92,34 @@ Constraints: demand per PO line is either assigned or unmet, container volume an
 
 ---
 
-## Local Setup
+## Running Locally
 
-Dependencies are managed with [uv](https://docs.astral.sh/uv/).
+### Prerequisites
+
+- [uv](https://docs.astral.sh/uv/getting-started/installation/), which also installs a matching Python (3.12+) if you don't have one:
+
+  ```bash
+  curl -LsSf https://astral.sh/uv/install.sh | sh      # macOS / Linux
+  # Windows: powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+  ```
+
+### Install and run
 
 ```bash
 git clone https://github.com/haydenchiu/Container_Optimization.git
 cd Container_Optimization
 
-uv sync                                  # Create .venv and install dependencies
-uv run streamlit run app/main.py         # Run the dashboard
+uv sync                                  # Create .venv and install locked dependencies
+uv run streamlit run app/main.py         # Start the dashboard
 ```
 
-Development:
+Streamlit opens [http://localhost:8501](http://localhost:8501). Upload the files from `data/samples/` and click **Run Optimization**.
+
+### Run in GitHub Codespaces
+
+The repo includes a dev container. Open it in [GitHub Codespaces](https://codespaces.new/haydenchiu/Container_Optimization); dependencies install automatically and the dashboard starts on port 8501.
+
+### Development
 
 ```bash
 uv run pytest                            # Tests
