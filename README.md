@@ -1,22 +1,22 @@
-# 📦 Container Shipping Optimizer
+# Container Shipping Optimizer
 
 A web-based dashboard for optimizing purchase order fulfillment using available container capacities. Upload your data, configure penalties, and visualize optimization results with interactive dashboards.
 
 ---
 
-## 🚀 Features
+## Features
 
-- 📁 Upload PO and container capacity CSVs
-- ⚙️ Configure late fees, daily late rates, grace days, priority weighting and early-arrival holding costs
-- 🧠 Run container optimization engine (MILP solved with CBC via PuLP)
-- 📊 View KPI metrics: cost, unmet quantity, container usage
-- 📅 Filter results by PO number and export time (year/week/month)
-- 📈 Interactive visualizations (histograms, pie charts, bar charts)
-- 📥 Download aggregated or full results as CSV
+- Upload PO and container capacity CSVs
+- Configure late fees, daily late rates, grace days, priority weighting and early-arrival holding costs
+- Run container optimization engine (MILP solved with CBC via PuLP)
+- View KPI metrics: cost, unmet quantity, container usage
+- Filter results by PO number and export time (year/week/month)
+- Interactive visualizations (histograms, pie charts, bar charts)
+- Download aggregated or full results as CSV
 
 ---
 
-## 🛠️ Project Structure
+## Project Structure
 
 ```
 ├── app/
@@ -33,7 +33,7 @@ A web-based dashboard for optimizing purchase order fulfillment using available 
 
 ---
 
-## 📄 Sample Input Files
+## Sample Input Files
 
 | File | Description |
 |------|-------------|
@@ -72,7 +72,7 @@ Constraints: demand per PO line is either assigned or unmet, container volume an
 
 ---
 
-## 🧪 Local Setup
+## Local Setup
 
 Dependencies are managed with [uv](https://docs.astral.sh/uv/).
 

@@ -98,7 +98,7 @@ def _fulfillment_status(row) -> str:
 
 
 def show_dashboard():
-    st.title("📦 Container Shipping Optimizer")
+    st.title("Container Shipping Optimizer")
 
     st.markdown("""
     Upload your purchase order and container capacity files below, configure parameters, and run the optimization.
@@ -116,17 +116,17 @@ def show_dashboard():
 
     if st.button("Run Optimization"):
         if not (po_file and cap_file):
-            st.warning("⚠️ Please upload both CSV files to continue.")
+            st.warning("Please upload both CSV files to continue.")
             st.stop()
         try:
             results_df, cap_df, status, is_optimal, unserved = run_pipeline(
                 po_file.getvalue(), cap_file.getvalue(), penalty, time_limit_s
             )
         except DataValidationError as e:
-            st.error(f"❌ Input error: {e}")
+            st.error(f"Input error: {e}")
             st.stop()
         except Exception as e:
-            st.error(f"❌ Error: {e}")
+            st.error(f"Error: {e}")
             st.stop()
 
         results_df["Export Date"] = pd.to_datetime(results_df["Export ETA"])
@@ -143,7 +143,7 @@ def show_dashboard():
             run_signature=current_signature,
             penalty=penalty,
         )
-        st.success("✅ Optimization completed!")
+        st.success("Optimization completed!")
 
     if "results_df" not in st.session_state:
         return
@@ -166,7 +166,7 @@ def show_dashboard():
         st.warning(f"No container capacity for these PO lanes, so they are unmet: {lanes}")
 
     # Shared filter inputs
-    st.sidebar.subheader("🔍 Filters")
+    st.sidebar.subheader("Filters")
     filter_po = st.sidebar.text_input("Filter by PO Number (partial match)", key="filter_po")
     filter_export_year = st.sidebar.multiselect(
         "Filter by Export Year",
@@ -200,7 +200,7 @@ def show_dashboard():
         filtered_df = filtered_df[filtered_df["Export YearWeek"].isin(filter_export_yearweek)]
 
     # Sorting and grouping controls
-    st.sidebar.subheader("📊 Data Display Settings")
+    st.sidebar.subheader("Data Display Settings")
     groupable_cols = [
         "PO Number",
         "PO Line Number",
@@ -240,7 +240,7 @@ def show_dashboard():
         st.sidebar.radio("Sort Order", ["Ascending", "Descending"], key="sort_order") == "Ascending"
     )
 
-    st.subheader("📊 KPI Summary")
+    st.subheader("KPI Summary")
 
     total_pos = filtered_df[["PO Number", "PO Line Number"]].drop_duplicates().shape[0]
     used_containers = filtered_df["Shipment ID"].dropna().nunique()
@@ -267,7 +267,7 @@ def show_dashboard():
     )
     row2[4].metric("Estimated Total Cost ($)", f"{total_cost:,.0f}")
 
-    st.subheader("📈 Visualization")
+    st.subheader("Visualization")
 
     po_status = filtered_df.groupby(["PO Number", "PO Line Number"], as_index=False).agg(
         {"Qty Assigned": "sum", "Unmet Qty": "sum"}
@@ -341,13 +341,13 @@ def show_dashboard():
             width="stretch",
         )
 
-    st.subheader("📊 Aggregated Results")
+    st.subheader("Aggregated Results")
 
     if groupby_cols:
         try:
             display_df = filtered_df.groupby(groupby_cols, as_index=False)[valid_numeric_cols].sum()
         except Exception as e:
-            st.error(f"⚠️ Aggregation failed: {e}")
+            st.error(f"Aggregation failed: {e}")
             display_df = filtered_df.copy()
     else:
         display_df = filtered_df.copy()
@@ -367,7 +367,7 @@ def show_dashboard():
 
     used_containers_set = set(results_df["Shipment ID"].dropna())
     unused_df = cap_df[~cap_df["Shipment ID"].isin(used_containers_set)]
-    st.subheader("🪣 Unused Container Details")
+    st.subheader("Unused Container Details")
     st.dataframe(
         unused_df[
             [
@@ -392,10 +392,10 @@ def show_dashboard():
 
 
 def show_definitions():
-    st.title("📘 Definitions & Assumptions")
+    st.title("Definitions & Assumptions")
 
     st.markdown("""
-    ## 📦 Purchase Order (PO) Data
+    ## Purchase Order (PO) Data
     - **PO Number / PO Line Number**: Unique identifiers for each purchase order and item line.
     - **SKU**: Stock Keeping Unit, uniquely identifies a product.
     - **Product Name / Family**: Name and category of the product.
@@ -406,7 +406,7 @@ def show_definitions():
     - **Priority Level**: Higher numbers are more important (0 = lowest).
     - **Unmet Penalty**: Base cost per unit left unshipped, before priority weighting.
 
-    ## 🚢 Container Capacity Data
+    ## Container Capacity Data
     - **Week_Year**: ISO week of departure (e.g. 2025-W25); containers depart on the Monday of that week.
     - **Available Units**: Number of available containers for this configuration.
     - **From/To Port**: Origin and destination of the shipment.
@@ -415,7 +415,7 @@ def show_definitions():
     - **Price (USD)**: Cost of using one container.
     """)
 
-    st.markdown("## 🧮 Optimization Logic")
+    st.markdown("## Optimization Logic")
     st.markdown(
         "The optimizer minimizes total cost = container prices + late penalties "
         "+ early holding costs + unmet penalties. For PO line $i$ on container $s$:"
@@ -446,18 +446,18 @@ def show_definitions():
     - Volume/weight must not exceed container limits; a container's price is paid if it carries anything.
     - Containers are limited by availability (expanded into unique shipment IDs).
 
-    ## 📊 KPIs and Metrics
+    ## KPIs and Metrics
     - **Used Containers**: Number of containers utilized in assignments
     - **Total Container Cost**: Container prices split across PO lines by volume share
     - **Unused Containers**: Available containers not used in optimization
     - **Estimated Total Cost**: Sum of all penalties and container costs
 
-    ## 🎯 Fulfillment Status Classification
+    ## Fulfillment Status Classification
     - **Fully Met**: All ordered quantity shipped
     - **Partially Met**: Some but not all quantity shipped
     - **Unmet**: No quantity shipped for the PO line
 
-    ## 📈 Visualizations
+    ## Visualizations
     - **PO Fulfillment Status (by count and COGS)**
     - **Carrier Distribution of Assignments**
     - **COGS Fulfillment by Product Family**
@@ -465,7 +465,7 @@ def show_definitions():
 
 
 def show_download_templates():
-    st.title("📂 Download CSV Templates")
+    st.title("Download CSV Templates")
 
     st.markdown("""
     Use the following templates to prepare your input files for the optimizer.
@@ -539,7 +539,7 @@ def show_download_templates():
         columns=[col[0] for col in cap_columns],
     )
 
-    st.subheader("📄 Purchase Order Template")
+    st.subheader("Purchase Order Template")
     st.dataframe(po_template, width="stretch")
     st.download_button(
         label="Download Purchase Order Template",
@@ -548,7 +548,7 @@ def show_download_templates():
         mime="text/csv",
     )
 
-    st.subheader("🚚 Container Capacity Template")
+    st.subheader("Container Capacity Template")
     st.dataframe(cap_template, width="stretch")
     st.download_button(
         label="Download Container Capacity Template",
@@ -558,7 +558,7 @@ def show_download_templates():
     )
 
     st.markdown("""
-    ## 🧾 Column Descriptions
+    ## Column Descriptions
     """)
 
     st.markdown("### Purchase Order Columns")
