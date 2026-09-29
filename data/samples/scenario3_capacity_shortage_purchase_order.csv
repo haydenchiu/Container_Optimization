@@ -1,0 +1,13 @@
+PO Number,PO Line Number,SKU,Product Name,Product Family,IsElectronic,COGS,From Port,To Port,Export ETA,Import ETA,To Be Shipped Quantity,Length (cm),Width (cm),Height (cm),Weight (kg),Priority Level,Unmet Penalty
+PO-KEY-01,1,SKU1001,Smartphone X,Electronics,1,250,SG,SF,16/06/2025,12/07/2025,3629,33,24,13,2.27,2,250.0
+PO-KEY-01,2,SKU1015,Action Camera,Electronics,1,120,SG,SF,02/06/2025,28/06/2025,4433,42,11,21,2.13,2,120.0
+PO-KEY-01,3,SKU1016,Mini Projector,Electronics,1,130,SG,SF,16/06/2025,12/07/2025,792,27,48,35,9.98,2,130.0
+PO-MKT-01,1,SKU1001,Smartphone X,Electronics,1,250,SG,SF,09/06/2025,05/07/2025,3820,33,24,13,2.27,0,250.0
+PO-MKT-01,2,SKU1015,Action Camera,Electronics,1,120,SG,SF,09/06/2025,05/07/2025,3772,42,11,21,2.13,0,120.0
+PO-MKT-01,3,SKU1016,Mini Projector,Electronics,1,130,SG,SF,09/06/2025,05/07/2025,934,27,48,35,9.98,0,130.0
+PO-RTL-01,1,SKU1002,Coffee Maker,Appliances,1,75,SG,SF,02/06/2025,28/06/2025,1551,32,49,16,4.52,1,75.0
+PO-RTL-01,2,SKU1020,Rice Cooker,Appliances,1,80,SG,SF,02/06/2025,28/06/2025,741,44,28,44,9.76,1,80.0
+PO-RTL-01,3,SKU1006,Electric Kettle,Appliances,1,40,SG,SF,09/06/2025,05/07/2025,1525,28,29,33,4.82,1,40.0
+PO-OFC-01,1,SKU1003,Notebook A4,Stationery,0,2,SG,SF,09/06/2025,05/07/2025,719,36,39,42,20.64,1,2.0
+PO-OFC-01,2,SKU1019,Mechanical Pencil,Stationery,0,3,SG,SF,16/06/2025,12/07/2025,709,29,40,46,18.68,1,3.0
+PO-OFC-01,3,SKU1013,Sticky Notes,Stationery,0,1,SG,SF,16/06/2025,12/07/2025,2555,14,29,40,5.68,1,1.0

@@ -142,3 +142,20 @@ def test_sample_files_load():
     assert len(po_df) == 70
     assert len(cap_df) == 289
     assert (cap_df["Departure Date"].dt.dayofweek == 0).all()
+
+
+@pytest.mark.parametrize(
+    "prefix",
+    [
+        "scenario1_irregular_schedule",
+        "scenario2_demand_surge",
+        "scenario3_capacity_shortage",
+        "scenario4_consolidation",
+    ],
+)
+def test_scenario_files_load(prefix):
+    po_df, cap_df = preprocess_data(
+        SAMPLES / f"{prefix}_purchase_order.csv", SAMPLES / f"{prefix}_container_capacity.csv"
+    )
+    assert len(po_df) > 0
+    assert len(cap_df) > 0

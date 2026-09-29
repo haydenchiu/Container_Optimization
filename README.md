@@ -10,17 +10,14 @@ A web-based dashboard for optimizing purchase order fulfillment using available 
 
 No installation needed. The app is hosted on Streamlit Community Cloud.
 
-1. Download the two sample files:
-   [sample_purchase_order_v1.csv](https://raw.githubusercontent.com/haydenchiu/Container_Optimization/main/data/samples/sample_purchase_order_v1.csv) and
-   [sample_container_capacity_v1.csv](https://raw.githubusercontent.com/haydenchiu/Container_Optimization/main/data/samples/sample_container_capacity_v1.csv)
-   (right-click, "Save link as...").
-2. Open the [live demo](https://containeroptimization-fjucc2hy794xnc9t7cbgyo.streamlit.app/).
-3. Upload the purchase order file and the container capacity file.
+1. Open the [live demo](https://containeroptimization-fjucc2hy794xnc9t7cbgyo.streamlit.app/).
+2. Pick **Sample Data & Templates** in the sidebar navigation and download both files of a scenario (see [Sample Scenarios](#sample-scenarios) below).
+3. Switch back to **Dashboard** and upload the purchase order file and the container capacity file.
 4. Optionally adjust the penalty settings in the sidebar, then click **Run Optimization**.
 5. Explore the KPIs, charts and tables, and use the sidebar filters to slice the results.
 
 If the app has been idle it may show a "This app has gone to sleep" page; click the wake-up button and wait about a minute.
-To use your own data, download blank templates from the **Download CSV Templates** page in the sidebar navigation.
+To use your own data, download blank templates from the same **Sample Data & Templates** page.
 
 ---
 
@@ -45,7 +42,8 @@ To use your own data, download blank templates from the **Download CSV Templates
 ├── src/container_optimization/
 │   ├── preprocessing.py             # CSV loading, validation, container expansion
 │   └── optimizer.py                 # Optimization model
-├── data/samples/                    # Sample input files
+├── data/samples/                    # Sample input files (baseline + scenarios)
+├── scripts/generate_scenarios.py    # Regenerates the scenario sample files
 ├── test/                            # pytest suite
 ├── pyproject.toml                   # Project metadata and dependencies (uv)
 └── uv.lock
@@ -53,14 +51,19 @@ To use your own data, download blank templates from the **Download CSV Templates
 
 ---
 
-## Sample Input Files
+## Sample Scenarios
 
-| File | Description |
-|------|-------------|
-| `data/samples/sample_purchase_order_v1.csv` | PO number, line item, SKU, quantity, dimensions, ETAs, priority, unmet penalty |
-| `data/samples/sample_container_capacity_v1.csv` | ISO departure week, lane, carrier, container type, units, capacity, transit time, price |
+Each scenario is a purchase order file plus a container capacity file, built to demonstrate one behavior. They can be downloaded from the app's **Sample Data & Templates** page or from the links below (right-click, "Save link as..."). Results quoted are for the default sidebar settings.
 
-Templates for both files can be downloaded from the dashboard's "Download CSV Templates" page.
+| Scenario | Files | What it shows |
+|----------|-------|---------------|
+| Baseline: mixed network | [PO](https://raw.githubusercontent.com/haydenchiu/Container_Optimization/main/data/samples/sample_purchase_order_v1.csv), [capacity](https://raw.githubusercontent.com/haydenchiu/Container_Optimization/main/data/samples/sample_container_capacity_v1.csv) | 70 PO lines on 9 lanes with weekly sailings; a general-purpose run. |
+| 1. Irregular shipping schedule | [PO](https://raw.githubusercontent.com/haydenchiu/Container_Optimization/main/data/samples/scenario1_irregular_schedule_purchase_order.csv), [capacity](https://raw.githubusercontent.com/haydenchiu/Container_Optimization/main/data/samples/scenario1_irregular_schedule_container_capacity.csv) | Blank sailing, a congested sailing, biweekly and every-three-weeks services, swinging transit times and a suspended lane. The optimizer pays for a premium express to avoid the congested sailing, SH to LA lines wait for the next sailing and arrive up to 10 days late, and the suspended lane is unmet with a warning. |
+| 2. Demand surge | [PO](https://raw.githubusercontent.com/haydenchiu/Container_Optimization/main/data/samples/scenario2_demand_surge_purchase_order.csv), [capacity](https://raw.githubusercontent.com/haydenchiu/Container_Optimization/main/data/samples/scenario2_demand_surge_container_capacity.csv) | A one-week product launch at more than twice the weekly capacity. The backlog rolls into later sailings: high-priority lines are at most 3 days late, low-priority volume waits up to 10 days. |
+| 3. Capacity shortage and priority triage | [PO](https://raw.githubusercontent.com/haydenchiu/Container_Optimization/main/data/samples/scenario3_capacity_shortage_purchase_order.csv), [capacity](https://raw.githubusercontent.com/haydenchiu/Container_Optimization/main/data/samples/scenario3_capacity_shortage_container_capacity.csv) | Capacity covers about 60% of demand. Low-value office supplies are dropped, and the marketplace (priority 0) projectors are dropped while the key account's (priority 2) identical projectors ship. Set Priority multiplier to 1 and the choice flips to value per m³ alone. |
+| 4. Consolidation vs. speed | [PO](https://raw.githubusercontent.com/haydenchiu/Container_Optimization/main/data/samples/scenario4_consolidation_purchase_order.csv), [capacity](https://raw.githubusercontent.com/haydenchiu/Container_Optimization/main/data/samples/scenario4_consolidation_container_capacity.csv) | Many small POs and plenty of capacity. Cheap goods wait a week to share containers (8 containers, 12 late lines); raise Daily late rate to 5% and the plan opens 10 containers with only 2 late lines. |
+
+The scenario files are generated by `scripts/generate_scenarios.py` (deterministic): `uv run python scripts/generate_scenarios.py`.
 
 ---
 

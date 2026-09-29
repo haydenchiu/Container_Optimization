@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pandas as pd
 import pytest
 
@@ -7,6 +9,9 @@ from container_optimization.optimizer import (
     lateness_days,
     optimize_shipping,
 )
+from container_optimization.preprocessing import preprocess_data
+
+SAMPLES = Path(__file__).resolve().parents[1] / "data" / "samples"
 
 PO_DEFAULTS = {
     "PO Number": "PO1",
@@ -219,6 +224,22 @@ def test_unit_larger_than_container_is_unmet():
     results = solve(po_df, make_cap_df({}))
     assert results["Qty Assigned"].sum() == 0
     assert results["Unmet Qty"].sum() == 5
+
+
+@pytest.mark.parametrize(("multiplier", "marketplace_projectors_ship"), [(2.0, False), (1.0, True)])
+def test_capacity_shortage_scenario_triage(multiplier, marketplace_projectors_ship):
+    prefix = SAMPLES / "scenario3_capacity_shortage"
+    po_df, cap_df = preprocess_data(
+        f"{prefix}_purchase_order.csv", f"{prefix}_container_capacity.csv"
+    )
+    results = solve(po_df, cap_df, priority_multiplier=multiplier)
+    by_line = results.groupby(["PO Number", "Product Name"])[["Qty Assigned", "Unmet Qty"]].sum()
+
+    assert by_line.loc[("PO-KEY-01", "Mini Projector"), "Unmet Qty"] == 0
+    assert (by_line.loc[("PO-MKT-01", "Mini Projector"), "Unmet Qty"] == 0) == (
+        marketplace_projectors_ship
+    )
+    assert by_line.loc["PO-OFC-01", "Qty Assigned"].sum() == 0
 
 
 def test_missing_required_column_raises():

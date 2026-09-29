@@ -100,7 +100,9 @@ class PenaltyParams:
 @dataclass(frozen=True)
 class SolverParams:
     time_limit_s: int | None = 120
-    gap_rel: float | None = None
+    # Stop once within 0.1% of the best bound; proving exact optimality can take minutes
+    # because many unit splits between identical containers have near-equal cost.
+    gap_rel: float | None = 0.001
     msg: bool = False
 
 

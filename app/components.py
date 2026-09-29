@@ -1,5 +1,6 @@
 import hashlib
 import io
+from pathlib import Path
 
 import pandas as pd
 import plotly.express as px
@@ -13,6 +14,76 @@ from container_optimization.preprocessing import (
 )
 
 COST_COLS = ["Unmet Penalty", "Late Penalty", "Early Holding Cost", "Allocated Container Cost"]
+
+SAMPLES_DIR = Path(__file__).resolve().parents[1] / "data" / "samples"
+
+
+def _scenario_files(prefix: str) -> dict:
+    return {
+        "purchase_order": f"{prefix}_purchase_order.csv",
+        "container_capacity": f"{prefix}_container_capacity.csv",
+    }
+
+
+SAMPLE_SCENARIOS = [
+    {
+        "title": "Baseline: mixed network",
+        "description": "70 PO lines across 3 origin and 3 destination ports, with weekly "
+        "MAERSK and CMA sailings on every lane for four weeks.",
+        "look_for": "A general-purpose run. Many lines arrive a few days late because their "
+        "Import ETA is tighter than any available sailing plus transit time.",
+        "files": {
+            "purchase_order": "sample_purchase_order_v1.csv",
+            "container_capacity": "sample_container_capacity_v1.csv",
+        },
+    },
+    {
+        "title": "Scenario 1: Irregular shipping schedule",
+        "description": "HK to LA has a blank MAERSK sailing in W25 and a congested W26 sailing "
+        "(21-day transit instead of 14), with a biweekly CMA service and a premium MATSON "
+        "express. SH to LA sails only every three weeks, SG to NY transit times swing between "
+        "26 and 36 days, and SH to NY service is suspended.",
+        "look_for": "HK to LA lines ready around W25 are moved onto the premium MATSON express "
+        "rather than the congested MAERSK sailing. SH to LA lines wait for the next sailing "
+        "and arrive up to 10 days late. The SH to NY lines are unmet and trigger a "
+        "no-capacity warning.",
+        "files": _scenario_files("scenario1_irregular_schedule"),
+    },
+    {
+        "title": "Scenario 2: Demand surge",
+        "description": "HK to LA has steady weekly capacity (198 m³) and light weekly POs, "
+        "except for a product launch on 16 June 2025 (W25) of about 485 m³, more than twice "
+        "a week's capacity. SH to LA carries steady demand as a control lane.",
+        "look_for": "The surge rolls into the W26 and W27 sailings. High-priority launch "
+        "lines are at most 3 days late, while most low-priority launch volume waits up to "
+        "10 days. Nothing is unmet because the backlog clears within the horizon.",
+        "files": _scenario_files("scenario2_demand_surge"),
+    },
+    {
+        "title": "Scenario 3: Capacity shortage and priority triage",
+        "description": "One lane (SG to SF) with about 300 m³ of capacity over three weeks "
+        "against about 475 m³ of demand. The same electronics SKUs are ordered by a key "
+        "account (priority 2) and a marketplace restock (priority 0), alongside retail "
+        "appliances and office supplies (priority 1).",
+        "look_for": "Low-value office supplies are dropped first. The marketplace projector "
+        "restock is dropped, while the key account's projectors ship.",
+        "try": "Set Priority multiplier to 1. The marketplace projectors now ship and retail "
+        "appliances are cut instead, because only value per m³ is left to decide.",
+        "files": _scenario_files("scenario3_capacity_shortage"),
+    },
+    {
+        "title": "Scenario 4: Consolidation vs. speed",
+        "description": "40 small PO lines (0.5 to 3 m³ each) on three lanes with plenty of "
+        "weekly capacity. Half are high-value electronics, half low-value stationery and "
+        "accessories. Each Import ETA is met only by the first sailing after export.",
+        "look_for": "With default penalties the optimizer uses 8 containers and lets 12 "
+        "mostly low-value lines wait a week to share containers, since a few days of late "
+        "penalty on cheap goods costs less than another container.",
+        "try": "Raise Daily late rate to 5%. The plan opens 10 containers and only 2 lines "
+        "are late.",
+        "files": _scenario_files("scenario4_consolidation"),
+    },
+]
 
 
 @st.cache_data(show_spinner="Running optimization...")
@@ -464,11 +535,46 @@ def show_definitions():
     """)
 
 
-def show_download_templates():
-    st.title("Download CSV Templates")
+def _show_sample_scenarios():
+    st.header("Sample Scenarios")
+    st.markdown(
+        "Each pair of files below is built to demonstrate one behavior of the optimizer. "
+        "Download both files of a pair, upload them on the Dashboard, and run the optimization."
+    )
+    for scenario in SAMPLE_SCENARIOS:
+        with st.container(border=True):
+            st.subheader(scenario["title"])
+            st.markdown(scenario["description"])
+            st.markdown(f"**What to look for:** {scenario['look_for']}")
+            if scenario.get("try"):
+                st.markdown(f"**Try:** {scenario['try']}")
+            cols = st.columns(2)
+            for col, (kind, label) in zip(
+                cols,
+                [
+                    ("purchase_order", "Purchase Order"),
+                    ("container_capacity", "Container Capacity"),
+                ],
+                strict=True,
+            ):
+                file_name = scenario["files"][kind]
+                col.download_button(
+                    label=f"Download {label} CSV",
+                    data=(SAMPLES_DIR / file_name).read_bytes(),
+                    file_name=file_name,
+                    mime="text/csv",
+                    key=f"download_{file_name}",
+                )
 
+
+def show_download_templates():
+    st.title("Sample Data & Templates")
+
+    _show_sample_scenarios()
+
+    st.header("Blank Templates")
     st.markdown("""
-    Use the following templates to prepare your input files for the optimizer.
+    Use the following templates to prepare your own input files for the optimizer.
     Ensure your uploaded files match the expected column names and formats exactly.
     """)
 
